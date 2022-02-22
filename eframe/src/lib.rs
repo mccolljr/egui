@@ -180,6 +180,20 @@ pub fn run_native(app: Box<dyn epi::App>, native_options: epi::NativeOptions) ->
     egui_glow::run(app, &native_options)
 }
 
+/// Like `run_native`, but allows providing backend-specific options.
+///
+/// See [`crate::run_native`]
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "egui_glium"))] // make sure we still compile with `--all-features`
+#[cfg(feature = "egui_glow")]
+pub fn run_native_with_options(
+    app: Box<dyn epi::App>,
+    native_options: epi::NativeOptions,
+    backend_options: egui_glow::BackendOptions,
+) -> ! {
+    egui_glow::run_with_options(app, &native_options, &backend_options)
+}
+
 // disabled since we want to be able to compile with `--all-features`
 // #[cfg(all(feature = "egui_glium", feature = "egui_glow"))]
 // compile_error!("Enable either egui_glium or egui_glow, not both");

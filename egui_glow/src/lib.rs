@@ -104,7 +104,7 @@ mod vao_emulate;
 pub use egui_winit;
 
 #[cfg(all(feature = "epi", feature = "winit"))]
-pub use epi_backend::{run, NativeOptions};
+pub use epi_backend::{run, run_with_options, BackendOptions, NativeOptions};
 
 // ----------------------------------------------------------------------------
 

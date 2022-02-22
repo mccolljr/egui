@@ -45,9 +45,27 @@ fn create_display(
 
 pub use epi::NativeOptions;
 
+/// Options unique to the egui_glow backend
+#[derive(Default, Copy, Clone)]
+pub struct BackendOptions {
+    /// The texture filter used by the Painter.
+    /// Default is `Linear`
+    pub texture_filter: painter::TextureFilter,
+}
+
 /// Run an egui app
-#[allow(unsafe_code)]
+#[inline(always)]
 pub fn run(app: Box<dyn epi::App>, native_options: &epi::NativeOptions) -> ! {
+    run_with_options(app, native_options, &BackendOptions::default())
+}
+
+/// Run an egui app, with additional glow-specific options
+#[allow(unsafe_code)]
+pub fn run_with_options(
+    app: Box<dyn epi::App>,
+    native_options: &epi::NativeOptions,
+    backend_options: &BackendOptions,
+) -> ! {
     let persistence = egui_winit::epi::Persistence::from_app_name(app.name());
     let window_settings = persistence.load_window_settings();
     let window_builder =
@@ -61,6 +79,7 @@ pub fn run(app: Box<dyn epi::App>, native_options: &epi::NativeOptions) -> ! {
 
     let mut painter = crate::Painter::new(&gl, None, "")
         .unwrap_or_else(|error| panic!("some OpenGL error occurred {}\n", error));
+    painter.set_texture_filter(backend_options.texture_filter);
     let mut integration = egui_winit::epi::EpiIntegration::new(
         "egui_glow",
         painter.max_texture_side(),
